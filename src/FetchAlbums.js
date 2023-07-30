@@ -1,34 +1,93 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./FetchAlbums.css";
+import TitleList from "./TitleList";
 
-const UserList = () => {
-  const [data, setData] = useState([]);
-
+const FetchAlbums = ({ username }) => {
+  const [albums, setAlbums] = useState([]);
+  const [key, setKey] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [myId, setMyId] = useState();
+  const [titleTrue, setTitleTrue] = useState(false);
+  const [repetition, setRepetition] = useState([]);
   useEffect(() => {
-    FetchAlbums();
+    fetchUsers();
+    fetchUsers2();
   }, []);
 
-  const FetchAlbums = async () => {
+  const fetchUsers = async () => {
     try {
       const response = await fetch(
         "https://jsonplaceholder.typicode.com/albums"
       );
       const jsonData = await response.json();
-      setData(jsonData);
+      console.log("jsonData", jsonData);
+      for (let i = 0; i < jsonData.length; i++) {
+        if (repetition.find((o) => o.userId == jsonData[i].userId)) {
+          // return;
+          console.log("values repetating...!");
+        } else {
+          repetition.push(jsonData[i]);
+          // setAlbums(jsonData);
+          setKey(0);
+        }
+      }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching users:", error);
     }
   };
 
+  const fetchUsers2 = async () => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      const jsonData = await response.json();
+      setUsers(jsonData);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleTitleList = (e, id) => {
+    console.log("it is clicked..!", id);
+    setMyId(id);
+    setTitleTrue(true);
+    setKey(0);
+  };
+
   return (
-    <div className="movie-list">
-      {data.map((item) => (
-        <div className="movie" key={item.id}>
-          <h1>{item.userId}</h1>
-        </div>
-      ))}
-    </div>
+    <>
+      {/* <div className="item-count">{countUnseenItems()}</div> */}
+      <div>
+        {titleTrue ? (
+          <TitleList userid={myId} titleTrue={titleTrue} />
+        ) : (
+          <div>
+            <div className="card-container">
+              {repetition.map((data, index) => {
+                return (
+                  <div>
+                    <div className="item-count">
+                      <p>{repetition.length}</p>
+                    </div>
+                    <div key={index} className="card">
+                      <h2
+                        className="card-label"
+                        onClick={(e) => handleTitleList(e, data.userId)}
+                      >
+                        {data.userId}
+                      </h2>
+                    </div>
+                  </div>
+                );
+              })}
+              
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
-export default UserList;
+export default FetchAlbums;
