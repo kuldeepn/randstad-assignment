@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./FetchAlbums.css";
 import TitleList from "./TitleList";
+import { CountContext,BbackButtonContext } from "./App";
 
 const FetchAlbums = ({ username }) => {
   const [albums, setAlbums] = useState([]);
   const [key, setKey] = useState(0);
   const [users, setUsers] = useState([]);
   const [myId, setMyId] = useState();
-  const [titleTrue, setTitleTrue] = useState(false);
+  const[indexValue, setIndexValue]=useState(0)
+  // const [titleTrue, setTitleTrue] = useState(false);
   const [repetition, setRepetition] = useState([]);
+  const { countValue, setCountValue } = useContext(CountContext);
+  const { titleTrue, setTitleTrue } = useContext(BbackButtonContext);
+  
+  console.log('users', users);
   useEffect(() => {
     fetchUsers();
     fetchUsers2();
@@ -29,8 +35,12 @@ const FetchAlbums = ({ username }) => {
           repetition.push(jsonData[i]);
           // setAlbums(jsonData);
           setKey(0);
+
         }
+
       }
+      setCountValue(repetition.length);
+
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -48,11 +58,13 @@ const FetchAlbums = ({ username }) => {
     }
   };
 
-  const handleTitleList = (e, id) => {
+  const handleTitleList = (e, id,i) => {
     console.log("it is clicked..!", id);
     setMyId(id);
     setTitleTrue(true);
-    setKey(0);
+    setIndexValue(i);
+    setKey(Math.random());
+    
   };
 
   return (
@@ -60,7 +72,7 @@ const FetchAlbums = ({ username }) => {
       {/* <div className="item-count">{countUnseenItems()}</div> */}
       <div>
         {titleTrue ? (
-          <TitleList userid={myId} titleTrue={titleTrue} />
+          <TitleList userid={myId} />
         ) : (
           <div>
             <div className="card-container">
@@ -68,12 +80,16 @@ const FetchAlbums = ({ username }) => {
                 return (
                   <div>
                     <div className="item-count">
-                      <p>{repetition.length}</p>
+                      {index == indexValue ? (
+                        <p>{countValue}</p>
+                      ) : (
+                        <p>{repetition.length}</p>
+                      )}
                     </div>
                     <div key={index} className="card">
                       <h2
                         className="card-label"
-                        onClick={(e) => handleTitleList(e, data.userId)}
+                        onClick={(e) => handleTitleList(e, data.userId, index)}
                       >
                         {data.userId}
                       </h2>
@@ -81,6 +97,7 @@ const FetchAlbums = ({ username }) => {
                   </div>
                 );
               })}
+
               
             </div>
           </div>

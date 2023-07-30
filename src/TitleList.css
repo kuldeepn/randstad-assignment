@@ -2,18 +2,19 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  border: 2px;
-  
 }
 
+.item-container {
+  display: flex;
+  margin: 10%;
+}
 
 .item {
   padding: 5px;
   margin: 2px;
-  border-radius: 4px;
   cursor: pointer;
+  border-style: ridge;
 }
-
 
 .seen {
   background-color: #7be746;

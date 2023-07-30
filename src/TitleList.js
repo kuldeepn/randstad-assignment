@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { CountContext, BbackButtonContext } from "./App";
+import "./TitleList.css";
 
-const TitleList = ({ userid, titleTrue }) => {
+const TitleList = ({ userid }) => {
   const [items, setItems] = useState([]);
   const [seenItems, setSeenItems] = useState([]);
-  console.log('data',items);
+  // const [count, setCount] = useState();
+  const { countValue, setCountValue } = useContext(CountContext);
+  const { titleTrue, setTitleTrue } = useContext(BbackButtonContext);
+
+  // console.log('data',items);
   useEffect(() => {
     fetchAlbums();
-    console.log(userid);
+    // console.log(userid);
   }, []);
 
   const fetchAlbums = async (id) => {
@@ -17,7 +23,7 @@ const TitleList = ({ userid, titleTrue }) => {
       const jsonData = await response.json();
       //  const uniqueUserData = removeDuplicateIDs(jsonData);
       // setData(uniqueUserData);
-      console.log(userid, "MySameID");
+      // console.log(userid, "MySameID");
       setItems(jsonData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -25,22 +31,31 @@ const TitleList = ({ userid, titleTrue }) => {
   };
 
   const handleItemClick = (itemId) => {
-    setSeenItems([...seenItems, itemId]);
+    seenItems.push(itemId);
+
   };
 
-
+  const countUnseenItems = (e,index) => {
+    setCountValue(items.length - seenItems.length);
+    // setCountValue(count);
+    // console.log(items.length - seenItems.length);
+    
+  };
+// console.log("count", count);
 
   const handleSetTitle = () => {
-    titleTrue = false;
-    console.log("false");
+    setTitleTrue(false);
+    // console.log('back');
   };
   return (
     <div>
-      <div onClick={handleSetTitle}>Back</div>
+    <button onClick={handleSetTitle}>Back</button>
+    <div className="item-container">
+      
       {items.length > 0 && (
-        <div className="items-list" >
-          {items.map((item) => (
-            <div>
+        <div className="items-list">
+          {items.map((item,index) => (
+            <div key={index} onClick={(e)=>countUnseenItems(e,index)}>
               <div
                 key={item.id}
                 className={`item ${seenItems.includes(item.id) ? "seen" : ""}`}
@@ -52,7 +67,8 @@ const TitleList = ({ userid, titleTrue }) => {
           ))}
         </div>
       )}
-    </div>
+      </div>
+      </div>
   );
 };
 

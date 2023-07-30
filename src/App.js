@@ -1,11 +1,28 @@
 import "./App.css";
 import Header from "./Header";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import TitleList from "./TitleList";
 import FetchAlbums from "./FetchAlbums";
+export const CountContext = createContext({
+  countValue: '',
+  setCountValue:()=>''
+  
+});
+
+export const BbackButtonContext = createContext({
+  titleTrue: false,
+  settitleTrue: () => false,
+});
 
 function App() {
   const [isUserList, setUserList] = useState(true);
+  const [countValue, setCountValue] = useState(0);
+  const [titleTrue, setTitleTrue] = useState(false);
+  const countIndexValue = useMemo(() => ({ countValue, setCountValue }), [countValue]);
+  const titleBooleanValue = useMemo(
+    () => ({ titleTrue, setTitleTrue }),
+    [titleTrue]
+  );
 
   // useEffect(() => {
   //   fetchUsers();
@@ -28,13 +45,17 @@ function App() {
   };
 
   return (
-    <div>
-      <Header></Header>
+    <BbackButtonContext.Provider value={titleBooleanValue}>
+      <CountContext.Provider value={countIndexValue}>
+        <div>
+          <Header></Header>
 
-      <div className="card-container">
-        <FetchAlbums />
-      </div>
-    </div>
+          <div className="card-container">
+            <FetchAlbums />
+          </div>
+        </div>
+      </CountContext.Provider>
+    </BbackButtonContext.Provider>
   );
 }
 
